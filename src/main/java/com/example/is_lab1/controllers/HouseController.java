@@ -1,15 +1,17 @@
-package com.example.is_lab1.restApi;
+package com.example.is_lab1.controllers;
 
+import com.example.is_lab1.dto.house.HouseFilterRequest;
 import com.example.is_lab1.dto.house.HouseRequest;
 import com.example.is_lab1.dto.house.HouseResponse;
 import com.example.is_lab1.services.HouseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/house")
@@ -23,16 +25,16 @@ public class HouseController {
         HouseResponse responseDto = houseService.createHouse(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
                 .body(responseDto);
-
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<HouseResponse>> getAllHouses(){
-        List<HouseResponse> response = houseService.getAllHouses();
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(response);
+    public ResponseEntity<Page<HouseResponse>> getAllHouses(
+            @ModelAttribute HouseFilterRequest filter,
+            Pageable pageable
+    ) {
+        Page<HouseResponse> response = houseService.getAllHouses(filter, pageable);
+        return ResponseEntity.ok(response);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<HouseResponse> getById(@PathVariable Long id){
@@ -42,12 +44,12 @@ public class HouseController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id){
-        houseService.deleteHouseById(id);
+    public ResponseEntity<Void> deleteById(@PathVariable Long id,
+    @RequestParam(required = false) Long newHouseId){
+        houseService.deleteHouseById(id, newHouseId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }
-
 
     @PatchMapping("/{id}")
     public ResponseEntity<HouseResponse> updateById(@Valid @RequestBody HouseRequest request, @PathVariable Long id){
@@ -55,7 +57,4 @@ public class HouseController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
-
-
-
 }

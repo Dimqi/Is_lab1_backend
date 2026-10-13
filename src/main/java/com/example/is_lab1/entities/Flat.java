@@ -16,18 +16,14 @@ public class Flat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "flat_seq")
-    @SequenceGenerator(name = "flat_seq", sequenceName = "flat_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "flat_seq", sequenceName = "flat_seq", allocationSize = 1)
     private Long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
 
     @Column(nullable = false)
     private String name; //Поле не может быть null, Строка не может быть пустой
 
-    @Embedded
-    private Coordinates coordinates; //Поле не может быть null
-
     @Column(name = "creation_date", nullable = false, updatable = false)
     private java.time.LocalDate creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
-
 
     @Column(nullable = false)
     private int area; //Максимальное значение поля: 763, Значение поля должно быть больше 0

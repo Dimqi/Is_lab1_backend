@@ -1,5 +1,7 @@
 package com.example.is_lab1.dto.house;
 
+import com.example.is_lab1.dto.CoordinatesDto;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +20,9 @@ public record HouseRequest(
 
     @Positive(message = "Количество квартир должно быть больше 0")
     @NotNull(message = "Необходимо указать количество этажей")
-    Integer numberOfFlatsOnFloor
+    Integer numberOfFlatsOnFloor,
+
+    @NotNull(message = "Координаты обязательны")
+    @Valid CoordinatesDto coordinates
 ) {
 }

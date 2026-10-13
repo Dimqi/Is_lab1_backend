@@ -19,10 +19,9 @@ import java.util.List;
 public class House {
 
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "house_seq")
-    @SequenceGenerator(name = "house_seq", sequenceName = "house_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "house_seq", sequenceName = "house_seq", allocationSize = 1)
     private Long id;
 
     @NotNull
@@ -36,6 +35,10 @@ public class House {
     @Positive
     private Integer numberOfFlatsOnFloor; //Значение поля должно быть больше 0
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "house")
+    @OneToMany(mappedBy = "house")
     private List<Flat> flats;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "coordinates_id")
+    private Coordinates coordinates;
 }

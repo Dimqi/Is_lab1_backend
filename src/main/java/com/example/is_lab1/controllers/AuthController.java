@@ -1,8 +1,7 @@
-package com.example.is_lab1.restApi;
+package com.example.is_lab1.controllers;
 
 import com.example.is_lab1.dto.user.UserRequest;
 import com.example.is_lab1.dto.user.UserResponse;
-import com.example.is_lab1.jwt.JWTService;
 import com.example.is_lab1.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

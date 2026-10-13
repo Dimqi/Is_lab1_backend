@@ -14,11 +14,6 @@ public record FlatRequest(
         @NotBlank(message = "Строка не может быть пустой")
         String name,
 
-        @NotNull(message = "Координаты обязательны")
-        @Valid
-        CoordinatesDto coordinates,
-
-
         @Min(value = 1, message = "Площадь должна быть больше 0")
         @Max(value = 763, message = "Максимальная площадь 763")
         int area,

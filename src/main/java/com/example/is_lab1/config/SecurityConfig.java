@@ -34,8 +34,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/", "/api/auth/**", "/ws-flats/websocket/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/", "/api/auth/**", "/ws-flats/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout

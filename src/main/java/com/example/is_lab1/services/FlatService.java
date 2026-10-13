@@ -1,5 +1,7 @@
 package com.example.is_lab1.services;
 
+import com.example.is_lab1.dto.ChangeEvent;
+import com.example.is_lab1.dto.flat.FlatFilterRequest;
 import com.example.is_lab1.dto.flat.FlatRequest;
 import com.example.is_lab1.dto.flat.FlatResponse;
 import com.example.is_lab1.entities.*;
@@ -7,10 +9,18 @@ import com.example.is_lab1.exceptions.FlatNotFoundException;
 import com.example.is_lab1.exceptions.HouseNotFoundException;
 import com.example.is_lab1.repositories.FlatRepository;
 import com.example.is_lab1.repositories.HouseRepository;
+import com.example.is_lab1.repositories.specifications.FlatSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,6 +32,9 @@ public class FlatService {
     private final FlatRepository flatRepository;
     private final HouseRepository houseRepository;
 
+    private final SimpMessagingTemplate messagingTemplate;
+
+
     @Transactional(readOnly = true)
     public FlatResponse getFlatById(Long id){
         Flat flat = flatRepository.findById(id)
@@ -31,11 +44,12 @@ public class FlatService {
     }
 
     @Transactional(readOnly = true)
-    public List<FlatResponse> getAllFlats(){
-        List<Flat> flats = flatRepository.findAll();
-        return flats.stream()
-                .map(FlatResponse::fromEntity)
-                .toList();
+    public Page<FlatResponse> getAllFlats(Pageable pageable,
+                                          FlatFilterRequest filter) {
+        Specification<Flat> spec = FlatSpecifications.build(filter);
+
+        Page<Flat> flatsPage = flatRepository.findAll(spec, pageable);
+        return flatsPage.map(FlatResponse::fromEntity);
     }
 
 
@@ -51,7 +65,6 @@ public class FlatService {
 
         Flat flat = Flat.builder()
                 .name(flatRequest.name())
-                .coordinates(Coordinates.builder().x(flatRequest.coordinates().x()).y(flatRequest.coordinates().y()).build())
                 .area(flatRequest.area())
                 .balcony(flatRequest.balcony())
                 .furnish(flatRequest.furnish())
@@ -66,8 +79,13 @@ public class FlatService {
 
         flatRepository.save(flat);
 
+        FlatResponse responseDto = FlatResponse.fromEntity(flat);
 
-        return FlatResponse.fromEntity(flat);
+
+        sendWsEventAfterCommit(
+                ChangeEvent.of(ChangeEvent.EntityType.FLAT, ChangeEvent.ActionType.CREATE, responseDto.id(), responseDto)
+        );
+        return responseDto;
     }
 
 
@@ -87,28 +105,27 @@ public class FlatService {
         flat.setView(request.view());
         flat.setTransport(request.transport());
 
-        if (request.coordinates() != null) {
-            Coordinates coordinates = Coordinates.builder()
-                    .x(request.coordinates().x())
-                    .y(request.coordinates().y())
-                    .build();
-            flat.setCoordinates(coordinates);
-        } else {
-            flat.setCoordinates(null);
-        }
-
 
         if (request.houseId() != null) {
             House houseProxy = houseRepository.getReferenceById(request.houseId());
             flat.setHouse(houseProxy);
         }
 
-        return FlatResponse.fromEntity(flat);
+        FlatResponse responseDto = FlatResponse.fromEntity(flat);
+
+        sendWsEventAfterCommit(
+                ChangeEvent.of(ChangeEvent.EntityType.FLAT, ChangeEvent.ActionType.UPDATE, responseDto.id(), responseDto)
+        );
+
+        return responseDto;
     }
 
     @Transactional
     public void deleteFlat(Long id){
         flatRepository.deleteById(id);
+        sendWsEventAfterCommit(
+                ChangeEvent.of(ChangeEvent.EntityType.FLAT, ChangeEvent.ActionType.DELETE, id)
+        );
     }
 
     @Transactional(readOnly = true)
@@ -128,17 +145,36 @@ public class FlatService {
     }
 
     @Transactional(readOnly = true)
-    public List<FlatResponse> getAllByTimeToMetro(){
-        Sort sort = Sort.by("timeToMetroOnFoot").ascending();
-        List<Flat> flats = flatRepository.findAll(sort);
-        return flats.stream()
-                .map(FlatResponse::fromEntity)
-                .toList();
+    public Page<FlatResponse> getAllByTimeToMetro(Pageable pageable) {
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("timeToMetroOnFoot").ascending()
+        );
+
+        Page<Flat> flatsPage = flatRepository.findAll(sortedPageable);
+        return flatsPage.map(FlatResponse::fromEntity);
     }
 
     @Transactional(readOnly = true)
     public Long sumAllPrices(){
         return flatRepository.sumAllPrices();
+    }
+
+
+
+    private void sendWsEventAfterCommit(ChangeEvent<?> event){
+        if(TransactionSynchronizationManager.isActualTransactionActive()){
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    messagingTemplate.convertAndSend("/topic/events", event);
+                }
+            });
+        }
+        else {
+            messagingTemplate.convertAndSend("/topic/events", event);
+        }
     }
 
 }

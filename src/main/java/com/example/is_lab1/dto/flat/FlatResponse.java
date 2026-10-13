@@ -1,17 +1,12 @@
 package com.example.is_lab1.dto.flat;
 
-import com.example.is_lab1.dto.CoordinatesDto;
-import com.example.is_lab1.entities.Flat;
-import com.example.is_lab1.entities.Furnish;
-import com.example.is_lab1.entities.Transport;
-import com.example.is_lab1.entities.View;
+import com.example.is_lab1.entities.*;
 
 import java.time.LocalDate;
 
 public record FlatResponse(
         Long id,
         String name,
-        CoordinatesDto coordinates,
         LocalDate creationDate,
         int area,
         int price,
@@ -28,7 +23,6 @@ public record FlatResponse(
         return new FlatResponse(
                 entity.getId(),
                 entity.getName(),
-                CoordinatesDto.fromEntity(entity.getCoordinates()),
                 entity.getCreationDate(),
                 entity.getArea(),
                 entity.getPrice(),

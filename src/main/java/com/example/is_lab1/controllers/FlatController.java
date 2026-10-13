@@ -1,13 +1,16 @@
-package com.example.is_lab1.restApi;
+package com.example.is_lab1.controllers;
 
+import com.example.is_lab1.dto.flat.FlatFilterRequest;
 import com.example.is_lab1.dto.flat.FlatRequest;
 import com.example.is_lab1.dto.flat.FlatResponse;
-import com.example.is_lab1.dto.house.HouseResponse;
 import com.example.is_lab1.entities.Transport;
 import com.example.is_lab1.entities.View;
 import com.example.is_lab1.services.FlatService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +25,12 @@ public class FlatController {
     private final FlatService flatService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<FlatResponse>> getAllFlats(){
-        List<FlatResponse> flatResponses = flatService.getAllFlats();
-        return ResponseEntity.ok(flatResponses);
+    public ResponseEntity<Page<FlatResponse>> getAllFlats(
+           Pageable pageable,
+           @ModelAttribute FlatFilterRequest filterRequest
+
+    ) {
+        return ResponseEntity.ok(flatService.getAllFlats(pageable, filterRequest));
     }
 
 
@@ -77,9 +83,10 @@ public class FlatController {
     }
 
     @GetMapping("/sorted/timeToMetro")
-    public ResponseEntity<List<FlatResponse>> sortByTimeToMetro(){
-        List<FlatResponse> responseList = flatService.getAllByTimeToMetro();
-        return ResponseEntity.ok(responseList);
+    public ResponseEntity<Page<FlatResponse>> getSortedByTimeToMetro(
+            @PageableDefault(page = 0, size = 10) Pageable pageable
+    ) {
+        return ResponseEntity.ok(flatService.getAllByTimeToMetro(pageable));
     }
 
     @GetMapping("/sumPrices")
@@ -87,6 +94,8 @@ public class FlatController {
         Long prices = flatService.sumAllPrices();
         return ResponseEntity.ok(prices);
     }
+
+
 
 
 
