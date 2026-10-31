@@ -38,7 +38,7 @@ public class House {
     @OneToMany(mappedBy = "house")
     private List<Flat> flats;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "coordinates_id")
     private Coordinates coordinates;
 }

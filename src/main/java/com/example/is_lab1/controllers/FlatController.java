@@ -3,6 +3,7 @@ package com.example.is_lab1.controllers;
 import com.example.is_lab1.dto.flat.FlatFilterRequest;
 import com.example.is_lab1.dto.flat.FlatRequest;
 import com.example.is_lab1.dto.flat.FlatResponse;
+import com.example.is_lab1.entities.Flat;
 import com.example.is_lab1.entities.Transport;
 import com.example.is_lab1.entities.View;
 import com.example.is_lab1.services.FlatService;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,8 +96,6 @@ public class FlatController {
         Long prices = flatService.sumAllPrices();
         return ResponseEntity.ok(prices);
     }
-
-
 
 
 

@@ -24,6 +24,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -54,14 +55,38 @@ public class FlatService {
 
 
     @Transactional
-    public FlatResponse createFlat(FlatRequest flatRequest){
-        House houseProxy = null;
+    public FlatResponse createFlat(FlatRequest flatRequest) {
+        House house = null;
         Long houseId = flatRequest.houseId();
-        if(houseId != null){
-            houseProxy = houseRepository.findById(flatRequest.houseId())
-                    .orElseThrow(() -> new HouseNotFoundException("House not found house_id = " + flatRequest.houseId()));
+
+        if (houseId != null) {
+            house = houseRepository.findByIdForUpdate(houseId)
+                    .orElseThrow(() -> new HouseNotFoundException(
+                            "House not found house_id = " + houseId
+                    ));
         }
 
+        if (flatRepository.existsByNameAndHouse(flatRequest.name(), house)) {
+            throw new RuntimeException("Flat with same name already exists in this house");
+        }
+
+        if (houseId != null) {
+            Optional<Flat> repFlat =
+                    flatRepository.findFirstByHouse_Id(houseId);
+
+            if (repFlat.isPresent()) {
+                Float timeToMetro =
+                        repFlat.get().getTimeToMetroOnFoot();
+
+                if (!timeToMetro.equals(flatRequest.timeToMetroOnFoot())) {
+                    throw new RuntimeException(
+                            "Квартиры в одном доме не могут иметь " +
+                                    "различное время до метро. Рекомендуемое " +
+                                    "значение = " + timeToMetro
+                    );
+                }
+            }
+        }
 
         Flat flat = Flat.builder()
                 .name(flatRequest.name())
@@ -74,19 +99,25 @@ public class FlatService {
                 .numberOfRooms(flatRequest.numberOfRooms())
                 .view(flatRequest.view())
                 .creationDate(LocalDate.now())
-                .house(houseProxy)
+                .house(house)
                 .build();
 
         flatRepository.save(flat);
 
         FlatResponse responseDto = FlatResponse.fromEntity(flat);
 
-
         sendWsEventAfterCommit(
-                ChangeEvent.of(ChangeEvent.EntityType.FLAT, ChangeEvent.ActionType.CREATE, responseDto.id(), responseDto)
+                ChangeEvent.of(
+                        ChangeEvent.EntityType.FLAT,
+                        ChangeEvent.ActionType.CREATE,
+                        responseDto.id(),
+                        responseDto
+                )
         );
+
         return responseDto;
     }
+
 
 
 

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 public record CoordinatesDto(
         @NotNull(message = "Координата X не может быть null")
         Double x,
-        long y) {
+        Long y) {
     public static CoordinatesDto fromEntity(Coordinates entity){
         return new CoordinatesDto(
                 entity.getX(),

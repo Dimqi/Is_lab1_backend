@@ -3,6 +3,7 @@ package com.example.is_lab1.services;
 
 import com.example.is_lab1.dto.user.UserRequest;
 import com.example.is_lab1.dto.user.UserResponse;
+import com.example.is_lab1.entities.Role;
 import com.example.is_lab1.entities.User;
 import com.example.is_lab1.exceptions.UserAlreadyExistException;
 import com.example.is_lab1.jwt.JWTService;
@@ -46,6 +47,7 @@ public class AuthService {
         User user = User.builder()
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
+                .role(Role.USER)
                 .build();
 
         userRepository.saveAndFlush(user);

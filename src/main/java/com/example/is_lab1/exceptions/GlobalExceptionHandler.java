@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({HouseNotFoundException.class, FlatNotFoundException.class})
+    @ExceptionHandler({HouseNotFoundException.class, FlatNotFoundException.class, CoordinatesAlreadyExistException.class})
     public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException ex){
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
@@ -49,5 +49,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
+
 
 }

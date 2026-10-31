@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FlatRepository extends JpaRepository<Flat, Long>, JpaSpecificationExecutor<Flat> {
 
@@ -29,4 +30,9 @@ public interface FlatRepository extends JpaRepository<Flat, Long>, JpaSpecificat
     @Modifying
     @Query("UPDATE Flat f SET f.house = :newHouse WHERE f.house.id = :oldHouseId")
     void updateHouseForFlats(@Param("oldHouseId") Long oldHouseId, @Param("newHouse") House newHouse);
+
+    boolean existsByNameAndHouse(@Param("name") String name, @Param("house") House house);
+
+
+    Optional<Flat> findFirstByHouse_Id(@Param("id") Long id);
 }

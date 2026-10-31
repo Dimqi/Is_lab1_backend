@@ -24,6 +24,7 @@ public record FlatRequest(
         Boolean balcony,
 
         @Positive(message = "Время до метро должно быть больше 0")
+        @NotNull
         Float timeToMetroOnFoot,
 
         @Positive(message = "Количество комнат должно быть больше 0")

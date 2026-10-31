@@ -1,7 +1,11 @@
 package com.example.is_lab1.repositories.specifications;
 
+import com.example.is_lab1.dto.house.HouseRequest;
+import com.example.is_lab1.entities.Coordinates;
 import com.example.is_lab1.entities.House;
 import com.example.is_lab1.dto.house.HouseFilterRequest;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
@@ -43,4 +47,5 @@ public class HouseSpecifications {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
 }
