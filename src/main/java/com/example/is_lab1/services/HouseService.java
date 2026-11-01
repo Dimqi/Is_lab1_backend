@@ -22,6 +22,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,13 +47,23 @@ public class HouseService {
     private final ObjectMapper objectMapper;
     private final Validator validator;
 
+    @Retryable(
+            retryFor = Exception.class,
+            exceptionExpression = "@serializationFailure.isSerializationFailure(#root)",
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 100)
+    )
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public HouseResponse createHouse(HouseRequest request){
-        if(coordinatesRepository.existsByXAndY(request.coordinates().x(), request.coordinates().y())){
-            throw new CoordinatesAlreadyExistException("house with same coordinates already exist");
+    public HouseResponse createHouse(HouseRequest request) {
+
+        if (coordinatesRepository.existsByXAndY(request.coordinates().x(), request.coordinates().y()
+        )) {
+            throw new CoordinatesAlreadyExistException(
+                    "house with same coordinates already exist"
+            );
         }
 
-            House house = House.builder()
+        House house = House.builder()
                 .name(request.name())
                 .year(request.year())
                 .numberOfFlatsOnFloor(request.numberOfFlatsOnFloor())
@@ -59,21 +71,31 @@ public class HouseService {
                         Coordinates.builder()
                                 .x(request.coordinates().x())
                                 .y(request.coordinates().y())
-                                .build())
+                                .build()
+                )
                 .build();
 
         houseRepository.save(house);
+
         HouseResponse responseDto = HouseResponse.fromEntity(house);
 
         sendWsEventAfterCommit(
-                ChangeEvent.of(ChangeEvent.EntityType.HOUSE, ChangeEvent.ActionType.CREATE, responseDto.id(), responseDto)
+                ChangeEvent.of(
+                        ChangeEvent.EntityType.HOUSE,
+                        ChangeEvent.ActionType.CREATE,
+                        responseDto.id(),
+                        responseDto
+                )
         );
 
         return responseDto;
     }
 
     @Transactional(readOnly = true)
-    public Page<HouseResponse> getAllHouses(HouseFilterRequest filter, Pageable pageable){
+    public Page<HouseResponse> getAllHouses(
+            HouseFilterRequest filter,
+            Pageable pageable
+    ) {
         Specification<House> spec = HouseSpecifications.withFilter(filter);
 
         Page<House> housesPage = houseRepository.findAll(spec, pageable);
@@ -82,21 +104,38 @@ public class HouseService {
     }
 
     @Transactional(readOnly = true)
-    public HouseResponse getHouseById(Long id){
+    public HouseResponse getHouseById(Long id) {
+
         House house = houseRepository.findById(id)
-                .orElseThrow(() -> new HouseNotFoundException("House not found id =" + id ));
+                .orElseThrow(() ->
+                        new HouseNotFoundException("House not found id =" + id)
+                );
 
         return HouseResponse.fromEntity(house);
     }
 
-    @Transactional
+    @Retryable(
+            retryFor = Exception.class,
+            exceptionExpression = "@serializationFailure.isSerializationFailure(#root)",
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 100)
+    )
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deleteHouseById(Long id, Long newHouseId) {
+
         House houseToDelete = houseRepository.findById(id)
-                .orElseThrow(() -> new HouseNotFoundException("House not found"));
+                .orElseThrow(() ->
+                        new HouseNotFoundException("House not found")
+                );
 
         if (newHouseId != null) {
+
             House newHouse = houseRepository.findById(newHouseId)
-                    .orElseThrow(() -> new HouseNotFoundException("New house not found id = " + newHouseId));
+                    .orElseThrow(() ->
+                            new HouseNotFoundException(
+                                    "New house not found id = " + newHouseId
+                            )
+                    );
 
             flatRepository.updateHouseForFlats(id, newHouse);
         }
@@ -104,41 +143,75 @@ public class HouseService {
         houseRepository.delete(houseToDelete);
 
         sendWsEventAfterCommit(
-                ChangeEvent.of(ChangeEvent.EntityType.HOUSE, ChangeEvent.ActionType.DELETE, id)
+                ChangeEvent.of(
+                        ChangeEvent.EntityType.HOUSE,
+                        ChangeEvent.ActionType.DELETE,
+                        id
+                )
         );
     }
 
+    @Retryable(
+            retryFor = Exception.class,
+            exceptionExpression = "@serializationFailure.isSerializationFailure(#root)",
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 100)
+    )
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public HouseResponse updateHouse(HouseRequest request, Long id){
-        House house = houseRepository.findById(id)
-                .orElseThrow(() -> new HouseNotFoundException("House not found id = " + id));
+    public HouseResponse updateHouse(HouseRequest request, Long id) {
 
-        if(coordinatesRepository.existsByXAndY(request.coordinates().x(), request.coordinates().y())){
-            throw new RuntimeException("house with same coordinates already exist");
+        House house = houseRepository.findById(id)
+                .orElseThrow(() ->
+                        new HouseNotFoundException("House not found id = " + id)
+                );
+
+        if (coordinatesRepository.existsByXAndY(
+                request.coordinates().x(),
+                request.coordinates().y()
+        )) {
+            throw new RuntimeException(
+                    "house with same coordinates already exist"
+            );
         }
+
         house.setName(request.name());
         house.setYear(request.year());
         house.setNumberOfFlatsOnFloor(request.numberOfFlatsOnFloor());
 
-        house.setCoordinates(Coordinates.builder()
-                .x(request.coordinates().x())
-                .y(request.coordinates().y())
-                .build());
-
+        house.setCoordinates(
+                Coordinates.builder()
+                        .x(request.coordinates().x())
+                        .y(request.coordinates().y())
+                        .build()
+        );
 
         HouseResponse responseDto = HouseResponse.fromEntity(house);
+
         sendWsEventAfterCommit(
-                ChangeEvent.of(ChangeEvent.EntityType.HOUSE, ChangeEvent.ActionType.UPDATE, responseDto.id(), responseDto)
+                ChangeEvent.of(
+                        ChangeEvent.EntityType.HOUSE,
+                        ChangeEvent.ActionType.UPDATE,
+                        responseDto.id(),
+                        responseDto
+                )
         );
 
         return responseDto;
     }
 
+    @Retryable(
+            retryFor = Exception.class,
+            exceptionExpression = "@serializationFailure.isSerializationFailure(#root)",
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 100)
+    )
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public List<HouseResponse> importHousesFromFile(MultipartFile file) throws IOException {
-         HouseImportRequest request = objectMapper.readValue(
+    public List<HouseResponse> importHousesFromFile(MultipartFile file)
+            throws IOException {
+
+        HouseImportRequest request = objectMapper.readValue(
                 file.getInputStream(),
-                 HouseImportRequest.class
+                HouseImportRequest.class
         );
 
         Set<ConstraintViolation<HouseImportRequest>> violations =
@@ -158,27 +231,42 @@ public class HouseService {
             );
         }
 
-        Optional<CoordinatesDto> validFromFile = validateUniqueCoordinatesFromFile(request.houseRequests());
-        if(validFromFile.isPresent()){
+        Optional<CoordinatesDto> validFromFile =
+                validateUniqueCoordinatesFromFile(request.houseRequests());
+
+        if (validFromFile.isPresent()) {
+
             String duplicateCoordinates = validFromFile.get().toString();
-            throw new RuntimeException("Файл содержит дома с повторяющимися координатами = " + duplicateCoordinates);
+
+            throw new RuntimeException(
+                    "Файл содержит дома с повторяющимися координатами = " +
+                            duplicateCoordinates
+            );
         }
 
-        List<CoordinatesDto> validFromDB = validateUniqueCoordinatesFromDB(request.houseRequests());
-        if (!validFromDB.isEmpty()){
-            StringBuilder errorBuilder = new StringBuilder("В базе уже содержаться дома с координатами: \n");
-            for(CoordinatesDto coordinatesDto : validFromDB){
-                errorBuilder.append(coordinatesDto).append("\n");
+        List<CoordinatesDto> validFromDB =
+                validateUniqueCoordinatesFromDB(request.houseRequests());
 
+        if (!validFromDB.isEmpty()) {
+
+            StringBuilder errorBuilder = new StringBuilder(
+                    "В базе уже содержаться дома с координатами: \n"
+            );
+
+            for (CoordinatesDto coordinatesDto : validFromDB) {
+                errorBuilder.append(coordinatesDto).append("\n");
             }
+
             throw new RuntimeException(errorBuilder.toString());
         }
 
         return importHouses(request.houseRequests());
-
     }
 
-    private List<HouseResponse> importHouses(List<HouseRequest> houseRequests){
+    private List<HouseResponse> importHouses(
+            List<HouseRequest> houseRequests
+    ) {
+
         List<House> houses = houseRequests.stream()
                 .map(house -> House.builder()
                         .name(house.name())
@@ -195,16 +283,21 @@ public class HouseService {
                 .toList();
 
         return houseRepository.saveAll(houses)
-                .stream().map(HouseResponse::fromEntity)
+                .stream()
+                .map(HouseResponse::fromEntity)
                 .toList();
     }
 
+    private Optional<CoordinatesDto> validateUniqueCoordinatesFromFile(
+            List<HouseRequest> houseRequests
+    ) {
 
-    private Optional<CoordinatesDto> validateUniqueCoordinatesFromFile(List<HouseRequest> houseRequests) {
         Set<CoordinatesDto> uniqueCoordinates = new HashSet<>();
 
         for (HouseRequest houseReq : houseRequests) {
+
             CoordinatesDto coordinates = houseReq.coordinates();
+
             if (!uniqueCoordinates.add(coordinates)) {
                 return Optional.of(coordinates);
             }
@@ -213,25 +306,41 @@ public class HouseService {
         return Optional.empty();
     }
 
-    private List<CoordinatesDto> validateUniqueCoordinatesFromDB(List<HouseRequest> houseRequests){
-        Specification<Coordinates> spec = CoordinatesSpecifications.withCoordinatesUsedByHouse(houseRequests);
-        return coordinatesRepository.findAll(spec).stream()
+    private List<CoordinatesDto> validateUniqueCoordinatesFromDB(
+            List<HouseRequest> houseRequests
+    ) {
+
+        Specification<Coordinates> spec =
+                CoordinatesSpecifications.withCoordinatesUsedByHouse(houseRequests);
+
+        return coordinatesRepository.findAll(spec)
+                .stream()
                 .map(CoordinatesDto::fromEntity)
                 .toList();
     }
 
+    private void sendWsEventAfterCommit(ChangeEvent<?> event) {
 
-    private void sendWsEventAfterCommit(ChangeEvent<?> event){
-        if(TransactionSynchronizationManager.isActualTransactionActive()){
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    messagingTemplate.convertAndSend("/topic/events", event);
-                }
-            });
-        }
-        else {
-            messagingTemplate.convertAndSend("/topic/events", event);
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronization() {
+
+                        @Override
+                        public void afterCommit() {
+                            messagingTemplate.convertAndSend(
+                                    "/topic/events",
+                                    event
+                            );
+                        }
+                    }
+            );
+
+        } else {
+            messagingTemplate.convertAndSend(
+                    "/topic/events",
+                    event
+            );
         }
     }
 }

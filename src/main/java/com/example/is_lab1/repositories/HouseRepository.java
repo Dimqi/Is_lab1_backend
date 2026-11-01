@@ -1,19 +1,17 @@
 package com.example.is_lab1.repositories;
 
 import com.example.is_lab1.entities.House;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
+import java.util.Collection;
+import java.util.List;
 
-public interface HouseRepository extends JpaRepository<House, Long>, JpaSpecificationExecutor<House> {
-    boolean existsById(@Param("id") Long id);
+public interface HouseRepository extends JpaRepository<House, Long>,
+        JpaSpecificationExecutor<House> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT h FROM House h WHERE h.id = :id")
-    Optional<House> findByIdForUpdate(@Param("id") Long id);
+    @Query("SELECT h.id FROM House h WHERE h.id IN :houseIds")
+    List<Long> findExistingIds(@Param("houseIds") Collection<Long> houseIds);
 }

@@ -16,7 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -97,6 +99,20 @@ public class FlatController {
         return ResponseEntity.ok(prices);
     }
 
+    @PostMapping(value = "import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> importFlats(@RequestParam("file") MultipartFile file) throws IOException {
+
+        if (file.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Передан пустой файл");
+        }
+
+        System.out.println("Файл получен: " + file.getOriginalFilename());
+
+        return ResponseEntity.ok()
+                .body(flatService.importFlatsFromFile(file));
+    }
 
 
 }

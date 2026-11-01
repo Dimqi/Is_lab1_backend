@@ -1,14 +1,12 @@
 package com.example.is_lab1.config;
 
-
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
+import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -18,6 +16,7 @@ import java.util.Map;
 
 @Configuration
 @EnableTransactionManagement
+@EnableRetry(order = Ordered.LOWEST_PRECEDENCE - 1)
 public class EclipseLinkConfig {
 
     @Bean
@@ -38,11 +37,14 @@ public class EclipseLinkConfig {
         properties.put("eclipselink.ddl-generation", "create-or-extend-tables");
 
         factory.setJpaPropertyMap(properties);
+
         return factory;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+    public PlatformTransactionManager transactionManager(
+            LocalContainerEntityManagerFactoryBean entityManagerFactory
+    ) {
         return new JpaTransactionManager(entityManagerFactory.getObject());
     }
 }

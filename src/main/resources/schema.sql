@@ -28,5 +28,5 @@ CREATE TABLE IF NOT EXISTS flats (
     furnish VARCHAR(50) CHECK (furnish IN ('FINE', 'BAD', 'LITTLE')),
     view VARCHAR(50) CHECK (view IN ('YARD', 'PARK', 'BAD', 'NORMAL')),
     transport VARCHAR(50) CHECK (transport IN ('LITTLE', 'NORMAL', 'ENOUGH')),
-    house_id BIGINT REFERENCES house(id) ON DELETE SET NULL
+    house_id BIGINT REFERENCES house(id) ON DELETE NO ACTION
     );

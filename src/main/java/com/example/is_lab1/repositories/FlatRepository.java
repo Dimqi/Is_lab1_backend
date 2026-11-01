@@ -1,3 +1,4 @@
+
 package com.example.is_lab1.repositories;
 
 import com.example.is_lab1.entities.Flat;
@@ -13,10 +14,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface FlatRepository extends JpaRepository<Flat, Long>, JpaSpecificationExecutor<Flat> {
+public interface FlatRepository extends
+        JpaRepository<Flat, Long>,
+        JpaSpecificationExecutor<Flat> {
 
     @Modifying
-    @Query("DELETE FROM Flat f where f.transport = :transport")
+    @Query("DELETE FROM Flat f WHERE f.transport = :transport")
     int deleteByTransport(@Param("transport") Transport transport);
 
     int countByView(View view);
@@ -33,6 +36,9 @@ public interface FlatRepository extends JpaRepository<Flat, Long>, JpaSpecificat
 
     boolean existsByNameAndHouse(@Param("name") String name, @Param("house") House house);
 
-
     Optional<Flat> findFirstByHouse_Id(@Param("id") Long id);
+
+    boolean existsByNameAndHouseAndIdNot(String name, House house, Long id);
+
+    Optional<Flat> findFirstByHouse_IdAndIdNot(Long houseId, Long id);
 }

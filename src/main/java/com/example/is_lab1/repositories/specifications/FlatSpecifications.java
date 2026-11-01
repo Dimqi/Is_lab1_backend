@@ -1,6 +1,7 @@
 package com.example.is_lab1.repositories.specifications;
 
 import com.example.is_lab1.dto.flat.FlatFilterRequest;
+import com.example.is_lab1.dto.flat.FlatRequest;
 import com.example.is_lab1.entities.Flat;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -76,6 +77,61 @@ public class FlatSpecifications {
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<Flat> withNamesUsedByHouse(
+            List<FlatRequest> flatRequests) {
+
+        return (root, query, cb) -> {
+            if (flatRequests == null || flatRequests.isEmpty()) {
+                return cb.disjunction();
+            }
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            for (FlatRequest flatRequest : flatRequests) {
+                predicates.add(
+                        cb.and(
+                                cb.equal(root.get("name"), flatRequest.name()),
+                                cb.equal(
+                                        root.get("house").get("id"),
+                                        flatRequest.houseId()
+                                )
+                        )
+                );
+            }
+
+            return cb.or(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    public static Specification<Flat> withDifferentTimeToMetro(
+            List<FlatRequest> flatRequests) {
+
+        return (root, query, cb) -> {
+            if (flatRequests == null || flatRequests.isEmpty()) {
+                return cb.disjunction();
+            }
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            for (FlatRequest flatRequest : flatRequests) {
+                predicates.add(
+                        cb.and(
+                                cb.equal(
+                                        root.get("house").get("id"),
+                                        flatRequest.houseId()
+                                ),
+                                cb.notEqual(
+                                        root.get("timeToMetroOnFoot"),
+                                        flatRequest.timeToMetroOnFoot()
+                                )
+                        )
+                );
+            }
+
+            return cb.or(predicates.toArray(new Predicate[0]));
         };
     }
 }
