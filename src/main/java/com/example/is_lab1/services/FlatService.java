@@ -7,6 +7,8 @@ import com.example.is_lab1.dto.flat.FlatImportRequest;
 import com.example.is_lab1.dto.flat.FlatRequest;
 import com.example.is_lab1.dto.flat.FlatResponse;
 import com.example.is_lab1.entities.*;
+import com.example.is_lab1.entities.importHistory.ImportStatus;
+import com.example.is_lab1.entities.importHistory.ImportType;
 import com.example.is_lab1.exceptions.FlatNotFoundException;
 import com.example.is_lab1.exceptions.HouseNotFoundException;
 import com.example.is_lab1.repositories.FlatRepository;
@@ -32,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +47,7 @@ public class FlatService {
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate messagingTemplate;
     private final Validator validator;
+    private final ImportHistoryService importHistoryService;
 
     @Transactional(readOnly = true)
     public FlatResponse getFlatById(Long id) {
@@ -236,7 +240,7 @@ public class FlatService {
             backoff = @Backoff(delay = 100)
     )
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public List<FlatResponse> importFlatsFromFile(MultipartFile file) throws IOException {
+    public List<FlatResponse> importFlatsFromFile(User user, MultipartFile file, LocalDateTime createdAt) throws IOException {
         FlatImportRequest request = objectMapper.readValue(file.getInputStream(), FlatImportRequest.class);
         List<FlatRequest> flatRequests = request.flatRequests();
 
@@ -283,12 +287,16 @@ public class FlatService {
         List<FlatResponse> differentTimeFromDB = validateTimeToMetroFromDB(flatRequests);
 
         if (!differentTimeFromDB.isEmpty()) {
+
             throw new IllegalArgumentException(
                     "Время до метро в файле отличается от времени у существующих квартир в соответствующих домах: " + differentTimeFromDB
             );
         }
 
-        return importFlats(flatRequests);
+        List<FlatResponse> result = importFlats(flatRequests);
+
+        saveImport(user, ImportStatus.SUCCESS,  result.size(), createdAt);
+        return result;
     }
 
     private List<FlatResponse> importFlats(List<FlatRequest> flatRequests) {
@@ -383,6 +391,17 @@ public class FlatService {
             throw new HouseNotFoundException("Houses not found: " + requestedHouseIds);
         }
     }
+
+    private void saveImport(User user, ImportStatus status, int result,LocalDateTime createdAt){
+        importHistoryService.saveSuccessfullyImport(
+                user,
+                ImportType.FLAT,
+                status,
+                result,
+                createdAt);
+
+    }
+
 
     private void sendWsEventAfterCommit(ChangeEvent<?> event) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {

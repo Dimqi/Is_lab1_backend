@@ -8,6 +8,9 @@ import com.example.is_lab1.dto.house.HouseRequest;
 import com.example.is_lab1.dto.house.HouseResponse;
 import com.example.is_lab1.entities.Coordinates;
 import com.example.is_lab1.entities.House;
+import com.example.is_lab1.entities.User;
+import com.example.is_lab1.entities.importHistory.ImportStatus;
+import com.example.is_lab1.entities.importHistory.ImportType;
 import com.example.is_lab1.exceptions.CoordinatesAlreadyExistException;
 import com.example.is_lab1.exceptions.HouseNotFoundException;
 import com.example.is_lab1.repositories.CoordinatesRepository;
@@ -33,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,6 +50,7 @@ public class HouseService {
     private final CoordinatesRepository coordinatesRepository;
     private final ObjectMapper objectMapper;
     private final Validator validator;
+    private final ImportHistoryService importHistoryService;
 
     @Retryable(
             retryFor = Exception.class,
@@ -206,7 +211,7 @@ public class HouseService {
             backoff = @Backoff(delay = 100)
     )
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public List<HouseResponse> importHousesFromFile(MultipartFile file)
+    public List<HouseResponse> importHousesFromFile(User user, MultipartFile file, LocalDateTime startedAt)
             throws IOException {
 
         HouseImportRequest request = objectMapper.readValue(
@@ -222,10 +227,8 @@ public class HouseService {
             String errors = violations.stream()
                     .map(violation ->
                             violation.getPropertyPath() + ": " +
-                                    violation.getMessage()
-                    )
+                                    violation.getMessage())
                     .collect(Collectors.joining("; "));
-
             throw new IllegalArgumentException(
                     "Ошибка валидации файла: " + errors
             );
@@ -238,10 +241,7 @@ public class HouseService {
 
             String duplicateCoordinates = validFromFile.get().toString();
 
-            throw new RuntimeException(
-                    "Файл содержит дома с повторяющимися координатами = " +
-                            duplicateCoordinates
-            );
+            throw new IllegalArgumentException("Файл содержит дома с повторяющимися координатами = " + duplicateCoordinates);
         }
 
         List<CoordinatesDto> validFromDB =
@@ -249,18 +249,18 @@ public class HouseService {
 
         if (!validFromDB.isEmpty()) {
 
-            StringBuilder errorBuilder = new StringBuilder(
-                    "В базе уже содержаться дома с координатами: \n"
-            );
-
+            StringBuilder errorBuilder = new StringBuilder("В базе уже содержаться дома с координатами: \n");
             for (CoordinatesDto coordinatesDto : validFromDB) {
                 errorBuilder.append(coordinatesDto).append("\n");
             }
 
-            throw new RuntimeException(errorBuilder.toString());
+            throw new IllegalArgumentException(errorBuilder.toString());
         }
 
-        return importHouses(request.houseRequests());
+        List<HouseResponse> result = importHouses(request.houseRequests());
+
+        saveImport(user, ImportStatus.SUCCESS, result.size(), startedAt);
+        return result;
     }
 
     private List<HouseResponse> importHouses(
@@ -305,6 +305,17 @@ public class HouseService {
 
         return Optional.empty();
     }
+
+    private void saveImport(User user, ImportStatus status, int result,LocalDateTime startedAt){
+        importHistoryService.saveSuccessfullyImport(
+                user,
+                ImportType.HOUSE,
+                status,
+                result,
+                startedAt);
+
+    }
+
 
     private List<CoordinatesDto> validateUniqueCoordinatesFromDB(
             List<HouseRequest> houseRequests

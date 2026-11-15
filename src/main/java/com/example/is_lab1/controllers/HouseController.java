@@ -5,7 +5,10 @@ import com.example.is_lab1.dto.house.HouseFilterRequest;
 import com.example.is_lab1.dto.house.HouseRequest;
 import com.example.is_lab1.dto.house.HouseResponse;
 
+import com.example.is_lab1.entities.User;
 import com.example.is_lab1.services.HouseService;
+import com.example.is_lab1.services.ImportCoordinator;
+import com.example.is_lab1.services.ImportHistoryService;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.core.type.TypeReference;
@@ -28,8 +32,8 @@ import java.util.List;
 public class HouseController {
 
     private final HouseService houseService;
-    private final ObjectMapper objectMapper;
-    private final Validator validator;
+    private final ImportCoordinator importCoordinator;
+
 
     @PostMapping("/create")
     public ResponseEntity<HouseResponse> createHouse(@Valid @RequestBody HouseRequest request){
@@ -71,7 +75,7 @@ public class HouseController {
 
     @PostMapping(value = "import",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> importHoses(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> importHoses(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) throws IOException {
         if(file.isEmpty()){
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -81,7 +85,7 @@ public class HouseController {
 
         System.out.println("Файл получен: " + file.getOriginalFilename());
 
-        return ResponseEntity.ok().body(houseService.importHousesFromFile(file));
+        return ResponseEntity.ok().body(importCoordinator.importHousesFromFile(user, file));
     }
 
 }

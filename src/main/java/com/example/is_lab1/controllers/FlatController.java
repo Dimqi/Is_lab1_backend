@@ -5,8 +5,10 @@ import com.example.is_lab1.dto.flat.FlatRequest;
 import com.example.is_lab1.dto.flat.FlatResponse;
 import com.example.is_lab1.entities.Flat;
 import com.example.is_lab1.entities.Transport;
+import com.example.is_lab1.entities.User;
 import com.example.is_lab1.entities.View;
 import com.example.is_lab1.services.FlatService;
+import com.example.is_lab1.services.ImportCoordinator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +30,7 @@ import java.util.List;
 public class FlatController {
 
     private final FlatService flatService;
+    private final ImportCoordinator importCoordinator;
 
     @GetMapping("/all")
     public ResponseEntity<Page<FlatResponse>> getAllFlats(
@@ -100,7 +104,7 @@ public class FlatController {
     }
 
     @PostMapping(value = "import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> importFlats(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> importFlats(@AuthenticationPrincipal User user, @RequestParam("file") MultipartFile file) throws IOException {
 
         if (file.isEmpty()) {
             return ResponseEntity
@@ -111,7 +115,7 @@ public class FlatController {
         System.out.println("Файл получен: " + file.getOriginalFilename());
 
         return ResponseEntity.ok()
-                .body(flatService.importFlatsFromFile(file));
+                .body(importCoordinator.importFlatsFromFile(user, file));
     }
 
 
