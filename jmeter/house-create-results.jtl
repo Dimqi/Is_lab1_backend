@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testResults version="1.2">
+<httpSample t="21" it="0" lt="21" ct="0" ts="1794786719093" s="true" lb="Создать дом" rc="201" rm="" tn="Два пользователя 1-1" dt="text" by="544" sby="469" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:54,&quot;name&quot;:&quot;Дом 1&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:53,&quot;x&quot;:123.25,&quot;y&quot;:533762224}}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/create</java.net.URL>
+</httpSample>
+<httpSample t="128" it="0" lt="127" ct="0" ts="1794786719093" s="false" lb="Создать дом" rc="400" rm="" tn="Два пользователя 1-2" dt="text" by="493" sby="469" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:400,&quot;error&quot;:&quot;Bad Request&quot;,&quot;message&quot;:&quot;house with same coordinates already exist&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/create</java.net.URL>
+</httpSample>
+<httpSample t="34" it="0" lt="33" ct="3" ts="1794786719230" s="true" lb="Проверить дом на общих координатах" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="865" sby="351" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить наличие объекта по имени</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату Y</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить, что выборка помещается на странице</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;content&quot;:[{&quot;id&quot;:54,&quot;name&quot;:&quot;Дом 1&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:53,&quot;x&quot;:123.25,&quot;y&quot;:533762224}}],&quot;empty&quot;:false,&quot;first&quot;:true,&quot;last&quot;:true,&quot;number&quot;:0,&quot;numberOfElements&quot;:1,&quot;pageable&quot;:{&quot;offset&quot;:0,&quot;pageNumber&quot;:0,&quot;pageSize&quot;:2000,&quot;paged&quot;:true,&quot;sort&quot;:{&quot;empty&quot;:true,&quot;sorted&quot;:false,&quot;unsorted&quot;:true},&quot;unpaged&quot;:false},&quot;size&quot;:2000,&quot;sort&quot;:{&quot;empty&quot;:true,&quot;sorted&quot;:false,&quot;unsorted&quot;:true},&quot;totalElements&quot;:1,&quot;totalPages&quot;:1}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/all?size=2000&amp;name=%D0%94%D0%BE%D0%BC</java.net.URL>
+</httpSample>
+
+<httpSample t="52" it="0" lt="52" ct="0" ts="1795134517867" s="true" lb="Создать дом" rc="201" rm="" tn="Два пользователя 1-1" dt="text" by="544" sby="469" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:70,&quot;name&quot;:&quot;Дом 1&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:69,&quot;x&quot;:123.25,&quot;y&quot;:235836699}}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/create</java.net.URL>
+</httpSample>
+<httpSample t="126" it="0" lt="125" ct="0" ts="1795134517867" s="false" lb="Создать дом" rc="409" rm="" tn="Два пользователя 1-2" dt="text" by="519" sby="469" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:409,&quot;error&quot;:&quot;Conflict&quot;,&quot;message&quot;:&quot;house with same coordinates already exist&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/create</java.net.URL>
+</httpSample>
+<httpSample t="14" it="0" lt="14" ct="1" ts="1795134517998" s="true" lb="Проверить дом на общих координатах" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="865" sby="351" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить наличие объекта по имени</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату Y</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить, что выборка помещается на странице</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;content&quot;:[{&quot;id&quot;:70,&quot;name&quot;:&quot;Дом 1&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:69,&quot;x&quot;:123.25,&quot;y&quot;:235836699}}],&quot;empty&quot;:false,&quot;first&quot;:true,&quot;last&quot;:true,&quot;number&quot;:0,&quot;numberOfElements&quot;:1,&quot;pageable&quot;:{&quot;offset&quot;:0,&quot;pageNumber&quot;:0,&quot;pageSize&quot;:2000,&quot;paged&quot;:true,&quot;sort&quot;:{&quot;empty&quot;:true,&quot;sorted&quot;:false,&quot;unsorted&quot;:true},&quot;unpaged&quot;:false},&quot;size&quot;:2000,&quot;sort&quot;:{&quot;empty&quot;:true,&quot;sorted&quot;:false,&quot;unsorted&quot;:true},&quot;totalElements&quot;:1,&quot;totalPages&quot;:1}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/all?size=2000&amp;name=%D0%94%D0%BE%D0%BC</java.net.URL>
+</httpSample>
+
+</testResults>

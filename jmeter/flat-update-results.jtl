@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testResults version="1.2">
+<httpSample t="10" it="0" lt="10" ct="0" ts="1794786685209" s="true" lb="Обновить квартиру" rc="200" rm="" tn="Два пользователя 1-2" dt="text" by="666" sby="486" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:33,&quot;name&quot;:&quot;Квартира для обновления&quot;,&quot;creationDate&quot;:&quot;2026-11-16&quot;,&quot;area&quot;:62,&quot;price&quot;:6200000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:52}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/33</java.net.URL>
+</httpSample>
+<httpSample t="117" it="0" lt="117" ct="0" ts="1794786685209" s="true" lb="Обновить квартиру" rc="200" rm="" tn="Два пользователя 1-1" dt="text" by="666" sby="486" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:33,&quot;name&quot;:&quot;Квартира для обновления&quot;,&quot;creationDate&quot;:&quot;2026-11-16&quot;,&quot;area&quot;:51,&quot;price&quot;:5100000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:52}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/33</java.net.URL>
+</httpSample>
+<httpSample t="5" it="0" lt="5" ct="1" ts="1794786685329" s="true" lb="Проверить итоговую пару цены и площади" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="666" sby="315" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить площадь для итоговой цены</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:33,&quot;name&quot;:&quot;Квартира для обновления&quot;,&quot;creationDate&quot;:&quot;2026-11-16&quot;,&quot;area&quot;:51,&quot;price&quot;:5100000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:52}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/33</java.net.URL>
+</httpSample>
+
+<httpSample t="13" it="0" lt="13" ct="0" ts="1795134227610" s="true" lb="Обновить квартиру" rc="200" rm="" tn="Два пользователя 1-1" dt="text" by="666" sby="486" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:42,&quot;name&quot;:&quot;Квартира для обновления&quot;,&quot;creationDate&quot;:&quot;2026-11-20&quot;,&quot;area&quot;:51,&quot;price&quot;:5100000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:66}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/42</java.net.URL>
+</httpSample>
+<httpSample t="131" it="0" lt="131" ct="0" ts="1795134227610" s="true" lb="Обновить квартиру" rc="200" rm="" tn="Два пользователя 1-2" dt="text" by="666" sby="486" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:42,&quot;name&quot;:&quot;Квартира для обновления&quot;,&quot;creationDate&quot;:&quot;2026-11-20&quot;,&quot;area&quot;:62,&quot;price&quot;:6200000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:66}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/42</java.net.URL>
+</httpSample>
+<httpSample t="10" it="0" lt="10" ct="1" ts="1795134227747" s="true" lb="Проверить итоговую пару цены и площади" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="666" sby="315" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить площадь для итоговой цены</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:42,&quot;name&quot;:&quot;Квартира для обновления&quot;,&quot;creationDate&quot;:&quot;2026-11-20&quot;,&quot;area&quot;:62,&quot;price&quot;:6200000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:66}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/42</java.net.URL>
+</httpSample>
+
+</testResults>

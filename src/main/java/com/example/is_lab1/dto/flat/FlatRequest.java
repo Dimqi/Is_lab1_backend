@@ -1,13 +1,10 @@
 package com.example.is_lab1.dto.flat;
 
-import com.example.is_lab1.dto.CoordinatesDto;
 import com.example.is_lab1.entities.Furnish;
 import com.example.is_lab1.entities.Transport;
 import com.example.is_lab1.entities.View;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDate;
 
 public record FlatRequest(
         @NotNull(message = "Имя не может быть null")
@@ -34,6 +31,7 @@ public record FlatRequest(
         View view,
         Transport transport,
 
+        @NotNull(message = "Квартира не может быть без дома")
         Long houseId
 ) {
 }

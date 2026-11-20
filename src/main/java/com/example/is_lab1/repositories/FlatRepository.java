@@ -38,6 +38,8 @@ public interface FlatRepository extends
 
     Optional<Flat> findFirstByHouse_Id(@Param("id") Long id);
 
+    List<Flat> findAllByHouse_Id(Long houseId);
+
     boolean existsByNameAndHouseAndIdNot(String name, House house, Long id);
 
     Optional<Flat> findFirstByHouse_IdAndIdNot(Long houseId, Long id);

@@ -1,0 +1,9 @@
+{
+  "name": "Import test house",
+  "year": 100,
+  "numberOfFlatsOnFloor": 4,
+  "coordinates": {
+    "x": 128.375,
+    "y": 31827
+  }
+}

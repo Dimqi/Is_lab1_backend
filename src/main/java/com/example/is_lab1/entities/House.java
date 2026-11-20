@@ -26,19 +26,19 @@ public class House {
 
     @NotNull
     @Column(nullable = false)
-    private String name; //Поле не может быть null
+    private String name;
 
     @Positive
     @Max(value = 292)
-    private Long year; //Максимальное значение поля: 292, Значение поля должно быть больше 0
+    private Long year;
 
     @Positive
-    private Integer numberOfFlatsOnFloor; //Значение поля должно быть больше 0
+    private Integer numberOfFlatsOnFloor;
 
     @OneToMany(mappedBy = "house")
     private List<Flat> flats;
 
-    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "coordinates_id")
     private Coordinates coordinates;
 }

@@ -7,12 +7,15 @@ import com.example.is_lab1.dto.house.HouseImportRequest;
 import com.example.is_lab1.dto.house.HouseRequest;
 import com.example.is_lab1.dto.house.HouseResponse;
 import com.example.is_lab1.entities.Coordinates;
+import com.example.is_lab1.entities.Flat;
 import com.example.is_lab1.entities.House;
 import com.example.is_lab1.entities.User;
 import com.example.is_lab1.entities.importHistory.ImportStatus;
 import com.example.is_lab1.entities.importHistory.ImportType;
 import com.example.is_lab1.exceptions.CoordinatesAlreadyExistException;
+import com.example.is_lab1.exceptions.DataConflictException;
 import com.example.is_lab1.exceptions.HouseNotFoundException;
+import com.example.is_lab1.exceptions.ImportValidationException;
 import com.example.is_lab1.repositories.CoordinatesRepository;
 import com.example.is_lab1.repositories.FlatRepository;
 import com.example.is_lab1.repositories.HouseRepository;
@@ -135,6 +138,10 @@ public class HouseService {
 
         if (newHouseId != null) {
 
+            if (id.equals(newHouseId)) {
+                throw new DataConflictException("Нельзя перенести квартиры в удаляемый дом");
+            }
+
             House newHouse = houseRepository.findById(newHouseId)
                     .orElseThrow(() ->
                             new HouseNotFoundException(
@@ -142,6 +149,7 @@ public class HouseService {
                             )
                     );
 
+            validateFlatTransfer(id, newHouseId);
             flatRepository.updateHouseForFlats(id, newHouse);
         }
 
@@ -154,6 +162,31 @@ public class HouseService {
                         id
                 )
         );
+    }
+
+    private void validateFlatTransfer(Long sourceHouseId, Long targetHouseId) {
+        List<Flat> flats = new ArrayList<>(flatRepository.findAllByHouse_Id(sourceHouseId));
+        if (flats.isEmpty()) {
+            return;
+        }
+
+        flats.addAll(flatRepository.findAllByHouse_Id(targetHouseId));
+        Set<String> names = new HashSet<>();
+        Float timeToMetro = flats.get(0).getTimeToMetroOnFoot();
+
+        for (Flat flat : flats) {
+            if (!names.add(flat.getName())) {
+                throw new DataConflictException(
+                        "Перенос создаст квартиры с одинаковым именем в доме id = "
+                                + targetHouseId + ": " + flat.getName()
+                );
+            }
+            if (!Objects.equals(timeToMetro, flat.getTimeToMetroOnFoot())) {
+                throw new DataConflictException(
+                        "Перенос создаст квартиры с разным временем до метро в доме id = " + targetHouseId
+                );
+            }
+        }
     }
 
     @Retryable(
@@ -170,25 +203,23 @@ public class HouseService {
                         new HouseNotFoundException("House not found id = " + id)
                 );
 
-        if (coordinatesRepository.existsByXAndY(
-                request.coordinates().x(),
-                request.coordinates().y()
-        )) {
-            throw new RuntimeException(
-                    "house with same coordinates already exist"
-            );
+        Optional<House> houseOpt = houseRepository.findByCoordinates_XAndCoordinates_Y(request.coordinates().x(),
+                request.coordinates().y());
+
+        if(houseOpt.isPresent()){
+            House houseWithSameCoordinates =  houseOpt.get();
+            if (!houseWithSameCoordinates.getId().equals(house.getId())){
+                throw new CoordinatesAlreadyExistException("House with same coordinates already exists");
+            }
         }
 
         house.setName(request.name());
         house.setYear(request.year());
         house.setNumberOfFlatsOnFloor(request.numberOfFlatsOnFloor());
 
-        house.setCoordinates(
-                Coordinates.builder()
-                        .x(request.coordinates().x())
-                        .y(request.coordinates().y())
-                        .build()
-        );
+        Coordinates coordinates = house.getCoordinates();
+        coordinates.setX(request.coordinates().x());
+        coordinates.setY(request.coordinates().y());
 
         HouseResponse responseDto = HouseResponse.fromEntity(house);
 
@@ -229,7 +260,7 @@ public class HouseService {
                             violation.getPropertyPath() + ": " +
                                     violation.getMessage())
                     .collect(Collectors.joining("; "));
-            throw new IllegalArgumentException(
+            throw new ImportValidationException(
                     "Ошибка валидации файла: " + errors
             );
         }
@@ -241,7 +272,7 @@ public class HouseService {
 
             String duplicateCoordinates = validFromFile.get().toString();
 
-            throw new IllegalArgumentException("Файл содержит дома с повторяющимися координатами = " + duplicateCoordinates);
+            throw new ImportValidationException("Файл содержит дома с повторяющимися координатами = " + duplicateCoordinates);
         }
 
         List<CoordinatesDto> validFromDB =
@@ -254,12 +285,13 @@ public class HouseService {
                 errorBuilder.append(coordinatesDto).append("\n");
             }
 
-            throw new IllegalArgumentException(errorBuilder.toString());
+            throw new CoordinatesAlreadyExistException(errorBuilder.toString());
         }
 
         List<HouseResponse> result = importHouses(request.houseRequests());
 
         saveImport(user, ImportStatus.SUCCESS, result.size(), startedAt);
+        sendWsEventAfterCommit(ChangeEvent.of(ChangeEvent.EntityType.HOUSE, ChangeEvent.ActionType.CREATE, null));
         return result;
     }
 

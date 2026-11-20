@@ -26,33 +26,33 @@ public class Flat {
     private java.time.LocalDate creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
 
     @Column(nullable = false)
-    private int area; //Максимальное значение поля: 763, Значение поля должно быть больше 0
+    private int area;
 
     @Column(nullable = false)
-    private int price; //Значение поля должно быть больше 0
+    private int price;
 
     @Column
-    private Boolean balcony; //Поле может быть null
+    private Boolean balcony;
 
     @Column(name = "time_to_metro_on_foot")
-    private Float timeToMetroOnFoot; //Значение поля должно быть больше 0
+    private Float timeToMetroOnFoot;
 
     @Column(name = "number_of_rooms")
-    private Integer numberOfRooms; //Значение поля должно быть больше 0
+    private Integer numberOfRooms;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "furnish")
-    private Furnish furnish; //Поле может быть null
+    private Furnish furnish;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "view")
-    private View view; //Поле может быть null
+    private View view;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transport")
-    private Transport transport; //Поле может быть null
+    private Transport transport;
 
-    @ManyToOne
-    @JoinColumn(name = "house_id")
-    private House house; //Поле может быть null
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "house_id", nullable = false)
+    private House house;
 }

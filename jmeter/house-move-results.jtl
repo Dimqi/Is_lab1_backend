@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testResults version="1.2">
+<httpSample t="13" it="0" lt="13" ct="0" ts="1794786855384" s="true" lb="Изменить координаты дома" rc="200" rm="" tn="Два пользователя 1-1" dt="text" by="568" sby="491" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:62,&quot;name&quot;:&quot;Дом для переноса 1&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:62,&quot;x&quot;:123.25,&quot;y&quot;:589877994}}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/62</java.net.URL>
+</httpSample>
+<httpSample t="117" it="0" lt="117" ct="0" ts="1794786855384" s="false" lb="Изменить координаты дома" rc="400" rm="" tn="Два пользователя 1-2" dt="text" by="494" sby="491" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:400,&quot;error&quot;:&quot;Bad Request&quot;,&quot;message&quot;:&quot;House with same coordinates already exists&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/63</java.net.URL>
+</httpSample>
+<httpSample t="5" it="0" lt="5" ct="1" ts="1794786855503" s="true" lb="Проверить координаты дома A" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="568" sby="316" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату Y</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату X</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:62,&quot;name&quot;:&quot;Дом для переноса 1&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:62,&quot;x&quot;:123.25,&quot;y&quot;:589877994}}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/62</java.net.URL>
+</httpSample>
+<httpSample t="4" it="0" lt="4" ct="0" ts="1794786855510" s="true" lb="Проверить координаты дома B" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="568" sby="316" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату Y</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату X</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:63,&quot;name&quot;:&quot;Дом для переноса 2&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:63,&quot;x&quot;:123.25,&quot;y&quot;:589877993}}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/63</java.net.URL>
+</httpSample>
+
+<httpSample t="19" it="0" lt="19" ct="0" ts="1795134569857" s="true" lb="Изменить координаты дома" rc="200" rm="" tn="Два пользователя 1-2" dt="text" by="568" sby="491" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:72,&quot;name&quot;:&quot;Дом для переноса 2&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:72,&quot;x&quot;:123.25,&quot;y&quot;:392531439}}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/72</java.net.URL>
+</httpSample>
+<httpSample t="142" it="0" lt="141" ct="0" ts="1795134569857" s="false" lb="Изменить координаты дома" rc="409" rm="" tn="Два пользователя 1-1" dt="text" by="520" sby="491" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:409,&quot;error&quot;:&quot;Conflict&quot;,&quot;message&quot;:&quot;House with same coordinates already exists&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/71</java.net.URL>
+</httpSample>
+<httpSample t="23" it="0" lt="23" ct="2" ts="1795134570009" s="true" lb="Проверить координаты дома A" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="568" sby="316" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату Y</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату X</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:71,&quot;name&quot;:&quot;Дом для переноса 1&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:71,&quot;x&quot;:123.25,&quot;y&quot;:392531437}}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/71</java.net.URL>
+</httpSample>
+<httpSample t="19" it="0" lt="19" ct="0" ts="1795134570039" s="true" lb="Проверить координаты дома B" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="568" sby="316" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату Y</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить координату X</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:72,&quot;name&quot;:&quot;Дом для переноса 2&quot;,&quot;year&quot;:100,&quot;numberOfFlatsOnFloor&quot;:4,&quot;coordinates&quot;:{&quot;id&quot;:72,&quot;x&quot;:123.25,&quot;y&quot;:392531439}}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/72</java.net.URL>
+</httpSample>
+
+</testResults>

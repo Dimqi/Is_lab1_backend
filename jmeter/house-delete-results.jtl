@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testResults version="1.2">
+<httpSample t="15" it="0" lt="0" ct="0" ts="1794786790809" s="true" lb="Удалить дом с переносом квартир" rc="204" rm="" tn="Два пользователя 1-1" dt="" by="361" sby="416" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">Non-TEXT response data, cannot record: ()</responseData>
+  <java.net.URL>http://localhost:8080/api/house/56?newHouseId=57</java.net.URL>
+</httpSample>
+<httpSample t="118" it="0" lt="118" ct="0" ts="1794786790809" s="false" lb="Удалить дом с переносом квартир" rc="404" rm="" tn="Два пользователя 1-2" dt="text" by="494" sby="416" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:404,&quot;error&quot;:&quot;Not Found&quot;,&quot;message&quot;:&quot;House not found&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/56?newHouseId=58</java.net.URL>
+</httpSample>
+<httpSample t="6" it="0" lt="6" ct="1" ts="1794786790930" s="true" lb="Исходный дом удалён" rc="404" rm="" tn="Проверить результаты 1-1" dt="text" by="501" sby="316" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 404</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:404,&quot;error&quot;:&quot;Not Found&quot;,&quot;message&quot;:&quot;House not found id =56&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/56</java.net.URL>
+</httpSample>
+<httpSample t="6" it="0" lt="5" ct="0" ts="1794786790937" s="true" lb="Проверить перенос квартиры 1" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="664" sby="315" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить целевой дом</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:34,&quot;name&quot;:&quot;Квартира для переноса 1&quot;,&quot;creationDate&quot;:&quot;2026-11-16&quot;,&quot;area&quot;:40,&quot;price&quot;:4500000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:57}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/34</java.net.URL>
+</httpSample>
+<httpSample t="5" it="0" lt="5" ct="0" ts="1794786790943" s="true" lb="Проверить перенос квартиры 2" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="664" sby="315" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить целевой дом</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:35,&quot;name&quot;:&quot;Квартира для переноса 2&quot;,&quot;creationDate&quot;:&quot;2026-11-16&quot;,&quot;area&quot;:40,&quot;price&quot;:4500000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:57}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/35</java.net.URL>
+</httpSample>
+
+<httpSample t="11" it="0" lt="0" ct="0" ts="1794786822693" s="true" lb="Удалить дом с переносом квартир" rc="204" rm="" tn="Два пользователя 1-2" dt="" by="361" sby="416" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">Non-TEXT response data, cannot record: ()</responseData>
+  <java.net.URL>http://localhost:8080/api/house/59?newHouseId=61</java.net.URL>
+</httpSample>
+<httpSample t="115" it="0" lt="115" ct="0" ts="1794786822693" s="false" lb="Удалить дом с переносом квартир" rc="404" rm="" tn="Два пользователя 1-1" dt="text" by="494" sby="416" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:404,&quot;error&quot;:&quot;Not Found&quot;,&quot;message&quot;:&quot;House not found&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/59?newHouseId=60</java.net.URL>
+</httpSample>
+<httpSample t="5" it="0" lt="5" ct="0" ts="1794786822811" s="true" lb="Исходный дом удалён" rc="404" rm="" tn="Проверить результаты 1-1" dt="text" by="501" sby="316" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 404</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:404,&quot;error&quot;:&quot;Not Found&quot;,&quot;message&quot;:&quot;House not found id =59&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/59</java.net.URL>
+</httpSample>
+<httpSample t="5" it="0" lt="5" ct="0" ts="1794786822817" s="true" lb="Проверить перенос квартиры 1" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="664" sby="315" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить целевой дом</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:36,&quot;name&quot;:&quot;Квартира для переноса 1&quot;,&quot;creationDate&quot;:&quot;2026-11-16&quot;,&quot;area&quot;:40,&quot;price&quot;:4500000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:61}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/36</java.net.URL>
+</httpSample>
+<httpSample t="5" it="0" lt="5" ct="0" ts="1794786822823" s="true" lb="Проверить перенос квартиры 2" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="664" sby="315" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить целевой дом</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:37,&quot;name&quot;:&quot;Квартира для переноса 2&quot;,&quot;creationDate&quot;:&quot;2026-11-16&quot;,&quot;area&quot;:40,&quot;price&quot;:4500000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:61}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/37</java.net.URL>
+</httpSample>
+
+<httpSample t="21" it="0" lt="0" ct="0" ts="1795134723293" s="true" lb="Удалить дом с переносом квартир" rc="204" rm="" tn="Два пользователя 1-1" dt="" by="361" sby="416" ng="2" na="2">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">Non-TEXT response data, cannot record: ()</responseData>
+  <java.net.URL>http://localhost:8080/api/house/74?newHouseId=75</java.net.URL>
+</httpSample>
+<httpSample t="145" it="0" lt="145" ct="0" ts="1795134723294" s="false" lb="Удалить дом с переносом квартир" rc="404" rm="" tn="Два пользователя 1-2" dt="text" by="494" sby="416" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP-результат операции</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:404,&quot;error&quot;:&quot;Not Found&quot;,&quot;message&quot;:&quot;House not found&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/74?newHouseId=76</java.net.URL>
+</httpSample>
+<httpSample t="22" it="0" lt="22" ct="3" ts="1795134723448" s="true" lb="Исходный дом удалён" rc="404" rm="" tn="Проверить результаты 1-1" dt="text" by="501" sby="316" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 404</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;status&quot;:404,&quot;error&quot;:&quot;Not Found&quot;,&quot;message&quot;:&quot;House not found id =74&quot;}</responseData>
+  <java.net.URL>http://localhost:8080/api/house/74</java.net.URL>
+</httpSample>
+<httpSample t="14" it="0" lt="14" ct="0" ts="1795134723472" s="true" lb="Проверить перенос квартиры 1" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="664" sby="315" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить целевой дом</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:48,&quot;name&quot;:&quot;Квартира для переноса 1&quot;,&quot;creationDate&quot;:&quot;2026-11-20&quot;,&quot;area&quot;:40,&quot;price&quot;:4500000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:75}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/48</java.net.URL>
+</httpSample>
+<httpSample t="12" it="0" lt="12" ct="0" ts="1795134723488" s="true" lb="Проверить перенос квартиры 2" rc="200" rm="" tn="Проверить результаты 1-1" dt="text" by="664" sby="315" ng="1" na="1">
+  <assertionResult>
+    <name>HTTP 200</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>Проверить целевой дом</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseData class="java.lang.String">{&quot;id&quot;:49,&quot;name&quot;:&quot;Квартира для переноса 2&quot;,&quot;creationDate&quot;:&quot;2026-11-20&quot;,&quot;area&quot;:40,&quot;price&quot;:4500000,&quot;balcony&quot;:null,&quot;timeToMetroOnFoot&quot;:8.0,&quot;numberOfRooms&quot;:null,&quot;furnish&quot;:null,&quot;view&quot;:null,&quot;transport&quot;:null,&quot;houseId&quot;:75}</responseData>
+  <java.net.URL>http://localhost:8080/api/flat/49</java.net.URL>
+</httpSample>
+
+</testResults>

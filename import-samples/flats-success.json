@@ -1,0 +1,18 @@
+{
+  "flatRequests": [
+    {
+      "name": "Import OK A",
+      "area": 40,
+      "price": 4500000,
+      "timeToMetroOnFoot": 8,
+      "houseId": 42
+    },
+    {
+      "name": "Import OK B",
+      "area": 55,
+      "price": 6200000,
+      "timeToMetroOnFoot": 8,
+      "houseId": 42
+    }
+  ]
+}

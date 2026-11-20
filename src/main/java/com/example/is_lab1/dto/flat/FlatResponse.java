@@ -32,7 +32,7 @@ public record FlatResponse(
                 entity.getFurnish(),
                 entity.getView(),
                 entity.getTransport(),
-                entity.getHouse() != null ? entity.getHouse().getId() : null
+                entity.getHouse().getId()
         );
     }
 

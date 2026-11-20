@@ -1,0 +1,10 @@
+{
+  "flatRequests": [
+    {
+      "name": "Import missing house",
+      "area": 38,
+      "price": 4100000,
+      "timeToMetroOnFoot": 8
+    }
+  ]
+}

@@ -9,6 +9,9 @@ import com.example.is_lab1.dto.flat.FlatResponse;
 import com.example.is_lab1.entities.*;
 import com.example.is_lab1.entities.importHistory.ImportStatus;
 import com.example.is_lab1.entities.importHistory.ImportType;
+import com.example.is_lab1.exceptions.FlatAlreadyExistsException;
+import com.example.is_lab1.exceptions.DataConflictException;
+import com.example.is_lab1.exceptions.ImportValidationException;
 import com.example.is_lab1.exceptions.FlatNotFoundException;
 import com.example.is_lab1.exceptions.HouseNotFoundException;
 import com.example.is_lab1.repositories.FlatRepository;
@@ -34,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,31 +75,28 @@ public class FlatService {
     )
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public FlatResponse createFlat(FlatRequest flatRequest) {
-        House house = null;
         Long houseId = flatRequest.houseId();
 
-        if (houseId != null) {
-            house = houseRepository.findById(houseId)
+        House house = houseRepository.findById(houseId)
                     .orElseThrow(() -> new HouseNotFoundException("House not found house_id = " + houseId));
-        }
+
 
         if (flatRepository.existsByNameAndHouse(flatRequest.name(), house)) {
-            throw new RuntimeException("Flat with same name already exists in this house");
+            throw new FlatAlreadyExistsException("Flat with same name already exists in this house");
         }
 
-        if (houseId != null) {
-            Optional<Flat> repFlat = flatRepository.findFirstByHouse_Id(houseId);
+        Optional<Flat> repFlat = flatRepository.findFirstByHouse_Id(houseId);
 
-            if (repFlat.isPresent()) {
-                Float timeToMetro = repFlat.get().getTimeToMetroOnFoot();
+        if (repFlat.isPresent()) {
+            Float timeToMetro = repFlat.get().getTimeToMetroOnFoot();
 
-                if (!Objects.equals(timeToMetro, flatRequest.timeToMetroOnFoot())) {
-                    throw new RuntimeException(
-                            "Квартиры в одном доме не могут иметь различное время до метро. Рекомендуемое значение = " + timeToMetro
-                    );
-                }
+            if (!Objects.equals(timeToMetro, flatRequest.timeToMetroOnFoot())) {
+                throw new DataConflictException(
+                        "Квартиры в одном доме не могут иметь различное время до метро. Рекомендуемое значение = " + timeToMetro
+                );
             }
         }
+
 
         Flat flat = buildFlat(flatRequest, house);
         flatRepository.save(flat);
@@ -135,32 +136,29 @@ public class FlatService {
         flat.setTransport(request.transport());
 
         Long houseId = request.houseId();
-        House house = null;
 
-        if (houseId != null) {
-            house = houseRepository.findById(houseId)
-                    .orElseThrow(() -> new HouseNotFoundException("House not found house_id = " + houseId));
-        }
+        House house = houseRepository.findById(houseId)
+                .orElseThrow(() -> new HouseNotFoundException("House not found house_id = " + houseId));
+
 
         flat.setHouse(house);
 
         if (flatRepository.existsByNameAndHouseAndIdNot(request.name(), house, id)) {
-            throw new RuntimeException("Flat with same name already exists in this house");
+            throw new FlatAlreadyExistsException("Flat with same name already exists in this house");
         }
 
-        if (houseId != null) {
-            Optional<Flat> repFlat = flatRepository.findFirstByHouse_IdAndIdNot(houseId, id);
 
-            if (repFlat.isPresent()) {
-                Float timeToMetro = repFlat.get().getTimeToMetroOnFoot();
+        Optional<Flat> repFlat = flatRepository.findFirstByHouse_IdAndIdNot(houseId, id);
 
-                if (!Objects.equals(timeToMetro, request.timeToMetroOnFoot())) {
-                    throw new RuntimeException(
-                            "Квартиры в одном доме не могут иметь различное время до метро. Рекомендуемое значение = " + timeToMetro
-                    );
-                }
-            }
+        if (repFlat.isPresent()) {
+            Float timeToMetro = repFlat.get().getTimeToMetroOnFoot();
+             if (!Objects.equals(timeToMetro, request.timeToMetroOnFoot())) {
+                 throw new DataConflictException(
+                         "Квартиры в одном доме не могут иметь различное время до метро. Рекомендуемое значение = " + timeToMetro
+                 );
+             }
         }
+
 
         FlatResponse responseDto = FlatResponse.fromEntity(flat);
 
@@ -182,7 +180,7 @@ public class FlatService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 100)
     )
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteFlat(Long id) {
         flatRepository.deleteById(id);
 
@@ -201,7 +199,7 @@ public class FlatService {
             maxAttempts = 3,
             backoff = @Backoff(delay = 100)
     )
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Integer deleteByTransport(Transport transport) {
         return flatRepository.deleteByTransport(transport);
     }
@@ -244,7 +242,6 @@ public class FlatService {
         FlatImportRequest request = objectMapper.readValue(file.getInputStream(), FlatImportRequest.class);
         List<FlatRequest> flatRequests = request.flatRequests();
 
-        validateHousesExist(flatRequests);
 
         Set<ConstraintViolation<FlatImportRequest>> violations = validator.validate(request);
 
@@ -253,15 +250,17 @@ public class FlatService {
                     .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                     .collect(Collectors.joining("; "));
 
-            throw new IllegalArgumentException("Ошибка валидации файла: " + errors);
+            throw new ImportValidationException("Ошибка валидации файла: " + errors);
         }
+
+        validateHousesExist(flatRequests);
 
         Optional<FlatRequest> duplicateName = validateUniqueFlatNamesFromFile(flatRequests);
 
         if (duplicateName.isPresent()) {
             FlatRequest flat = duplicateName.get();
 
-            throw new IllegalArgumentException(
+            throw new ImportValidationException(
                     "Файл содержит квартиры с повторяющимся названием: " + flat.name() + ", houseId = " + flat.houseId()
             );
         }
@@ -269,7 +268,7 @@ public class FlatService {
         List<FlatResponse> duplicateNamesFromDB = validateUniqueFlatNamesFromDB(flatRequests);
 
         if (!duplicateNamesFromDB.isEmpty()) {
-            throw new IllegalArgumentException(
+            throw new DataConflictException(
                     "В базе уже существуют квартиры с такими названиями в соответствующих домах: " + duplicateNamesFromDB
             );
         }
@@ -279,23 +278,25 @@ public class FlatService {
         if (differentTime.isPresent()) {
             FlatRequest flat = differentTime.get();
 
-            throw new IllegalArgumentException(
+            throw new ImportValidationException(
                     "Файл содержит разные значения timeToMetroOnFoot для дома с id = " + flat.houseId()
             );
         }
 
         List<FlatResponse> differentTimeFromDB = validateTimeToMetroFromDB(flatRequests);
 
+
         if (!differentTimeFromDB.isEmpty()) {
 
-            throw new IllegalArgumentException(
+            throw new DataConflictException(
                     "Время до метро в файле отличается от времени у существующих квартир в соответствующих домах: " + differentTimeFromDB
             );
         }
 
         List<FlatResponse> result = importFlats(flatRequests);
 
-        saveImport(user, ImportStatus.SUCCESS,  result.size(), createdAt);
+        saveImport(user, ImportStatus.SUCCESS, result.size(), createdAt);
+        sendWsEventAfterCommit(ChangeEvent.of(ChangeEvent.EntityType.FLAT, ChangeEvent.ActionType.CREATE, null));
         return result;
     }
 
@@ -345,7 +346,7 @@ public class FlatService {
 
             Float existingTime = timeByHouse.putIfAbsent(houseId, timeToMetro);
 
-            if (!Objects.equals(existingTime, timeToMetro)) {
+            if (existingTime != null && !Objects.equals(existingTime, timeToMetro)) {
                 return Optional.of(flatRequest);
             }
         }
@@ -373,6 +374,7 @@ public class FlatService {
                 .furnish(flatRequest.furnish())
                 .view(flatRequest.view())
                 .transport(flatRequest.transport())
+                .creationDate(LocalDate.now())
                 .house(house)
                 .build();
     }
